@@ -1,7 +1,11 @@
 import { useState } from "react";
 import React from "react";
+import { useAuth0 } from "@auth0/auth0-react";
+
+let ce = false;
 
 const Create = () => {
+    const { loginWithRedirect, isAuthenticated } = useAuth0();
     const [location, setLocation] = useState('');
     const [eventType, setEvent] = useState('');
     const [media, setMedia] = useState('');
@@ -18,6 +22,7 @@ const Create = () => {
                 method: 'GET'
             }).then(response => response.text())
             .then(result => {console.log(result);
+                ce = false;
                 document.getElementById("return").innerHTML = result})
             .catch(error => console.log('error', error));
         } else if (toDo.td == "spotify") {
@@ -25,6 +30,15 @@ const Create = () => {
                 method: 'GET'
             }).then(response => response.text())
             .then(result => {console.log(result);
+                ce = false;
+                document.getElementById("return").innerHTML = result})
+            .catch(error => console.log('error', error));
+        } else if (toDo.td == "songs") {
+            fetch('http://localhost:8080/spotify?artist=\"' + toDo.artist + "\"", {
+                method: 'GET'
+            }).then(response => response.text())
+            .then(result => {console.log(result);
+                ce = false;
                 document.getElementById("return").innerHTML = result})
             .catch(error => console.log('error', error));
         } else {
@@ -32,13 +46,15 @@ const Create = () => {
                 method: 'GET'
             }).then(response => response.text())
             .then(result => {console.log(result);
+                ce = true;
                 document.getElementById("return").innerHTML = result})
             .catch(error => console.log('error', error));
         }
         
     }
-
+    if (isAuthenticated){
     return (
+        
         <div className="create">
             <h2>Which Thing To Do?</h2>
             <form>
@@ -75,14 +91,19 @@ const Create = () => {
                 value = {td}
                 onChange = {(l) => setTD(l.target.value)}>
                     <option value="netflix">Netflix</option>
-                    <option value="spotify">Music</option>
+                    <option value="spotify">Artists</option>
+                    <option value="songs">Songs</option>
                     <option value="event">Event</option>
                 </select>
                 <button onClick= {handleSubmit}>Submit: </button>
                 <p id="return">{retVal}</p>
             </form>
         </div>
+        
     )
+    }
 }
 
+
 export default Create;
+export var choice_event = ce;
